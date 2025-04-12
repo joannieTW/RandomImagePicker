@@ -21,7 +21,7 @@ export function RecentSelection({ image }: RecentSelectionProps) {
         </div>
         <div>
           <p className="text-gray-800 font-medium">{image.name}</p>
-          <p className="text-sm text-gray-600">Selected {timeAgo}</p>
+          <p className="text-sm text-gray-600">已選擇 {timeAgo}</p>
         </div>
       </div>
     </div>

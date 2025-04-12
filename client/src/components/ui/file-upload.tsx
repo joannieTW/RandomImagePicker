@@ -40,8 +40,8 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
     
     if (validFiles.length === 0) {
       toast({
-        title: "无效文件",
-        description: "请只上传图片文件",
+        title: "無效檔案",
+        description: "請只上傳圖片檔案",
         variant: "destructive"
       });
       return;
@@ -75,8 +75,8 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
     onUploadComplete(uploadedImages);
     
     toast({
-      title: "上传完成",
-      description: `已成功上传 ${uploadedImages.length} 张图片`,
+      title: "上傳完成",
+      description: `已成功上傳 ${uploadedImages.length} 張圖片`,
     });
   };
 

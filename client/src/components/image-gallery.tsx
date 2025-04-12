@@ -97,13 +97,13 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl font-semibold text-gray-800">您的图片</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">您的圖片</CardTitle>
         <div className="flex gap-2">
           <Button 
             onClick={selectRandomImage} 
             disabled={noImages || selectImageMutation.isPending}
           >
-            <Shuffle className="mr-2 h-4 w-4" /> 随机选择图片
+            <Shuffle className="mr-2 h-4 w-4" /> 隨機選擇圖片
           </Button>
           <Button 
             variant="outline" 
@@ -127,7 +127,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         {noImages ? (
           <div className="py-12 text-center">
             <div className="text-4xl text-gray-400 mb-2">🖼️</div>
-            <p className="text-gray-600">尚未上传图片</p>
+            <p className="text-gray-600">尚未上傳圖片</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
@@ -150,7 +150,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
                     <div className="rounded-full bg-white w-10 h-10 flex items-center justify-center mb-2">
                       <Check className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-white text-sm font-medium">已选择</span>
+                    <span className="text-white text-sm font-medium">已選擇</span>
                   </div>
                 )}
               </div>
