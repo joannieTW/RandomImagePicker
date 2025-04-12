@@ -232,15 +232,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async resetAllImages(): Promise<void> {
-    // 將所有圖片的選擇狀態和計數重置為初始值
-    await db
-      .update(images)
-      .set({
-        selected: false,
-        selected_count: 0,
-        group_id: 0,
-        timestamp: new Date().toISOString()
-      });
+    // 清空所有圖片
+    await db.delete(images);
   }
 }
 
