@@ -207,7 +207,7 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
                       </div>
                       <p className="text-lg font-medium">{image.name}</p>
                       <p className="text-sm mt-1 opacity-80">
-                        第 {recentlySelected ? (recentlySelected.selected_count || 1) : 1} 次抽到
+                        第 {selectedCount + 1} 次抽到
                         {(image.group_id ?? 0) > 0 ? ` (組別 ${image.group_id})` : ""}
                       </p>
                     </motion.div>

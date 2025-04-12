@@ -116,7 +116,10 @@ export function ImageGallery({
       id: selectedImage.id,
       groupId: selectedGroup
     }, {
-      onSuccess: () => {
+      onSuccess: (updatedImage) => {
+        // 更新最近選擇的圖片，確保有最新的selected_count值
+        setRecentlySelected(updatedImage);
+        
         // 在抽取成功後，檢查該組別是否還有卡片可抽
         const remainingCardsInGroup = images.filter(img => {
           const groupMatch = selectedGroup === 0 || (img.group_id ?? 0) === selectedGroup || (img.group_id ?? 0) === 0;
@@ -138,6 +141,7 @@ export function ImageGallery({
       }
     });
     
+    // 先設置為初始狀態，彈窗中會顯示正確的結果
     setRecentlySelected(selectedImage);
     
     // 顯示彈出視窗
