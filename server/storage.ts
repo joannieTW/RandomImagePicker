@@ -91,4 +91,76 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Comment out memory storage
+// export const storage = new MemStorage();
+
+// Use DatabaseStorage instead
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getAllImages(): Promise<Image[]> {
+    return await db.select().from(images);
+  }
+
+  async getImage(id: number): Promise<Image | undefined> {
+    const [image] = await db.select().from(images).where(eq(images.id, id));
+    return image || undefined;
+  }
+
+  async createImage(insertImage: InsertImage): Promise<Image> {
+    const [image] = await db
+      .insert(images)
+      .values({ ...insertImage, selected: false })
+      .returning();
+    return image;
+  }
+
+  async createImages(insertImages: InsertImage[]): Promise<Image[]> {
+    if (insertImages.length === 0) return [];
+    
+    const results = await db
+      .insert(images)
+      .values(insertImages.map(img => ({ ...img, selected: false })))
+      .returning();
+    
+    return results;
+  }
+
+  async updateImage(id: number, selected: boolean): Promise<Image | undefined> {
+    const [image] = await db
+      .update(images)
+      .set({ selected, timestamp: new Date().toISOString() })
+      .where(eq(images.id, id))
+      .returning();
+    
+    return image || undefined;
+  }
+
+  async resetAllImages(): Promise<void> {
+    await db
+      .update(images)
+      .set({ selected: false })
+      .returning();
+  }
+}
+
+export const storage = new DatabaseStorage();
