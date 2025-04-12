@@ -30,8 +30,9 @@ export function ImageGallery({
   const { toast } = useToast();
 
   const selectImageMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const res = await apiRequest('PATCH', `/api/images/${id}/select`, undefined);
+    mutationFn: async (params: { id: number, groupId: number }) => {
+      const { id, groupId } = params;
+      const res = await apiRequest('PATCH', `/api/images/${id}/select?groupId=${groupId}`, undefined);
       return res.json();
     },
     onSuccess: () => {
@@ -69,26 +70,47 @@ export function ImageGallery({
   });
 
   const selectRandomImage = () => {
-    // Get all unselected images
-    const unselectedImages = images.filter(img => !img.selected);
+    let filteredImages;
     
-    if (unselectedImages.length === 0) {
+    // 根據選擇的組別和每張卡最多抽兩次的規則過濾圖片
+    if (selectedGroup > 0) {
+      // 如果有選擇特定組別，只從該組別中抽取
+      filteredImages = images.filter(img => {
+        // 使用 nullish 合并運算符處理 null 值
+        const groupMatch = (img.group_id ?? 0) === selectedGroup || (img.group_id ?? 0) === 0;
+        const canSelect = (img.selected_count ?? 0) < 2;
+        return groupMatch && canSelect;
+      });
+    } else {
+      // 沒有選擇組別，從所有卡片中抽取（每張最多抽2次）
+      filteredImages = images.filter(img => {
+        return (img.selected_count ?? 0) < 2;
+      });
+    }
+    
+    if (filteredImages.length === 0) {
       toast({
         title: "沒有可用圖片",
-        description: "所有圖片已被選擇。請重置以重新開始。"
+        description: selectedGroup > 0 
+          ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取兩次。請重置或選擇其他組別。`
+          : "所有圖片已被抽取兩次。請重置以重新開始。"
       });
       return;
     }
     
-    // Pick a random image
-    const randomIndex = Math.floor(Math.random() * unselectedImages.length);
-    const selectedImage = unselectedImages[randomIndex];
+    // 隨機選擇一張圖片
+    const randomIndex = Math.floor(Math.random() * filteredImages.length);
+    const selectedImage = filteredImages[randomIndex];
     
-    // Update the selection state
-    selectImageMutation.mutate(selectedImage.id);
+    // 更新選擇狀態並指定組別
+    selectImageMutation.mutate({
+      id: selectedImage.id,
+      groupId: selectedGroup
+    });
+    
     setRecentlySelected(selectedImage);
     
-    // Show the reveal modal
+    // 顯示彈出視窗
     setShowRevealModal(true);
   };
 
@@ -96,10 +118,53 @@ export function ImageGallery({
     resetMutation.mutate();
   };
 
-  // Check if all images are selected
-  const allSelected = images.length > 0 && images.every(img => img.selected);
+  // 處理組別切換
+  const handleGroupChange = (groupId: number) => {
+    setSelectedGroup(groupId);
+  };
   
-  // Check if no images are uploaded yet
+  // 生成組別標籤
+  const generateGroupTabs = () => {
+    if (totalGroups <= 1) return null;
+    
+    const tabs = [];
+    // 添加"全部"選項
+    tabs.push(
+      <Button 
+        key="all"
+        variant={selectedGroup === 0 ? "default" : "outline"}
+        className={`px-4 rounded-full ${selectedGroup === 0 ? "bg-primary" : ""}`}
+        onClick={() => handleGroupChange(0)}
+      >
+        全部
+      </Button>
+    );
+    
+    // 添加各個組別標籤
+    for (let i = 1; i <= totalGroups; i++) {
+      tabs.push(
+        <Button 
+          key={i}
+          variant={selectedGroup === i ? "default" : "outline"}
+          className={`px-4 rounded-full ${selectedGroup === i ? "bg-primary" : ""}`}
+          onClick={() => handleGroupChange(i)}
+        >
+          組別 {i}
+        </Button>
+      );
+    }
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-4 mt-2">
+        {tabs}
+      </div>
+    );
+  };
+  
+  // 是否所有圖片都已選擇
+  const allSelected = images.length > 0 && images.every(img => (img.selected_count ?? 0) >= 2);
+  
+  // 是否沒有上傳圖片
   const noImages = images.length === 0;
 
   if (allSelected) {
@@ -136,8 +201,11 @@ export function ImageGallery({
       <CardContent>
         <SelectionStatus 
           totalCount={images.length} 
-          selectedCount={images.filter(img => img.selected).length}
+          selectedCount={images.filter(img => (img.selected_count ?? 0) > 0).length}
         />
+        
+        {/* 顯示分組標籤 */}
+        {generateGroupTabs()}
         
         {recentlySelected && (
           <RecentSelection image={recentlySelected} />
@@ -164,12 +232,20 @@ export function ImageGallery({
                   className="w-full h-full object-cover"
                 />
                 
-                {image.selected && (
+                {/* 顯示卡片抽取狀態 */}
+                {(image.selected_count ?? 0) > 0 && (
                   <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center p-2">
                     <div className="rounded-full bg-white w-10 h-10 flex items-center justify-center mb-2">
                       <Check className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-white text-sm font-medium">已選擇</span>
+                    <span className="text-white text-sm font-medium">
+                      已抽取 {image.selected_count} 次
+                    </span>
+                    {(image.group_id ?? 0) > 0 && (
+                      <span className="text-white text-xs mt-1 opacity-80">
+                        組別 {image.group_id}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
