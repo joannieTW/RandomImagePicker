@@ -51,19 +51,31 @@ export default function Home() {
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-semibold text-gray-800 mb-2">隨機圖片選擇器</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          上傳多張圖片並隨機選擇一張。每張圖片只能被選擇一次。
+          上傳多張圖片並隨機選擇一張。每張圖片最多可被選擇兩次。可以將圖片分成多組進行抽取。
         </p>
       </header>
 
       <main className="space-y-8">
         <FileUpload onUploadComplete={handleUploadComplete} />
         
+        {/* 分組選擇器 */}
+        {images && images.length > 0 && (
+          <GroupSelector 
+            onGroupsChange={(groups) => setTotalGroups(groups)} 
+            disabled={isLoading}
+          />
+        )}
+        
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-[300px] w-full rounded-xl" />
           </div>
         ) : (
-          <>{images && <ImageGallery images={images} />}</>
+          <>{images && <ImageGallery 
+            images={images} 
+            activeGroup={activeGroup} 
+            totalGroups={totalGroups}
+          />}</>
         )}
       </main>
 

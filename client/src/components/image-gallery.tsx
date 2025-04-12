@@ -15,11 +15,18 @@ import { Image } from "@shared/schema";
 
 interface ImageGalleryProps {
   images: Image[];
+  activeGroup?: number;
+  totalGroups?: number;
 }
 
-export function ImageGallery({ images }: ImageGalleryProps) {
+export function ImageGallery({ 
+  images, 
+  activeGroup = 0, 
+  totalGroups = 1 
+}: ImageGalleryProps) {
   const [recentlySelected, setRecentlySelected] = useState<Image | null>(null);
   const [showRevealModal, setShowRevealModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<number>(activeGroup);
   const { toast } = useToast();
 
   const selectImageMutation = useMutation({
