@@ -23,6 +23,8 @@ export const images = pgTable("images", {
   name: text("name").notNull(),
   data: text("data").notNull(), // Store base64 encoded image data
   selected: boolean("selected").default(false),
+  selected_count: integer("selected_count").default(0), // Track selection count (up to 2)
+  group_id: integer("group_id").default(0), // To track which group it belongs to
   timestamp: text("timestamp").notNull(), // Store ISO timestamp of upload
 });
 

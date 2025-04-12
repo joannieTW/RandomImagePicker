@@ -46,13 +46,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.patch("/images/:id/select", async (req, res) => {
     try {
       const id = z.coerce.number().parse(req.params.id);
+      const groupId = req.query.groupId ? z.coerce.number().parse(req.query.groupId) : 0;
       
       const image = await storage.getImage(id);
       if (!image) {
         return res.status(404).json({ message: "Image not found" });
       }
       
-      const updatedImage = await storage.updateImage(id, true);
+      const updatedImage = await storage.updateImage(id, true, groupId);
       res.json(updatedImage);
     } catch (error) {
       if (error instanceof ZodError) {

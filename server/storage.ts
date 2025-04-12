@@ -145,10 +145,42 @@ export class DatabaseStorage implements IStorage {
     return results;
   }
 
-  async updateImage(id: number, selected: boolean): Promise<Image | undefined> {
+  async updateImage(id: number, selected: boolean, group_id: number = 0): Promise<Image | undefined> {
+    // Get the current image to check selected count
+    const [currentImage] = await db.select().from(images).where(eq(images.id, id));
+    
+    if (!currentImage) return undefined;
+    
+    // If deselecting (resetting), just set selected to false
+    if (!selected) {
+      const [image] = await db
+        .update(images)
+        .set({ 
+          selected, 
+          selected_count: 0,
+          group_id: 0,
+          timestamp: new Date().toISOString() 
+        })
+        .where(eq(images.id, id))
+        .returning();
+      
+      return image || undefined;
+    }
+    
+    // If selecting and count is already 2, don't allow more selections
+    if (currentImage.selected_count != null && currentImage.selected_count >= 2) {
+      return currentImage;
+    }
+    
+    // Increment selected_count when selecting
     const [image] = await db
       .update(images)
-      .set({ selected, timestamp: new Date().toISOString() })
+      .set({ 
+        selected, 
+        selected_count: (currentImage.selected_count || 0) + 1,
+        group_id,
+        timestamp: new Date().toISOString() 
+      })
       .where(eq(images.id, id))
       .returning();
     
