@@ -54,8 +54,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to reset selection",
+        title: "錯誤",
+        description: "無法重置選擇",
         variant: "destructive"
       });
     }
