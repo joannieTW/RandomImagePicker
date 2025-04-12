@@ -5,6 +5,7 @@ import { Check, Shuffle, RotateCcw } from "lucide-react";
 import { SelectionStatus } from "./selection-status";
 import { RecentSelection } from "./recent-selection";
 import { CompletionState } from "./completion-state";
+import { CardRevealModal } from "./card-reveal-modal";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ interface ImageGalleryProps {
 
 export function ImageGallery({ images }: ImageGalleryProps) {
   const [recentlySelected, setRecentlySelected] = useState<Image | null>(null);
+  const [showRevealModal, setShowRevealModal] = useState(false);
   const { toast } = useToast();
 
   const selectImageMutation = useMutation({
@@ -30,8 +32,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to select image",
+        title: "錯誤",
+        description: "無法選擇圖片",
         variant: "destructive"
       });
     }
@@ -46,8 +48,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
       setRecentlySelected(null);
       queryClient.invalidateQueries({ queryKey: ['/api/images'] });
       toast({
-        title: "Reset complete",
-        description: "All images are now available again"
+        title: "重置完成",
+        description: "已清空所有圖片，可以重新開始了"
       });
     },
     onError: () => {
@@ -65,8 +67,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     
     if (unselectedImages.length === 0) {
       toast({
-        title: "No images available",
-        description: "All images have been selected. Reset to start over."
+        title: "沒有可用圖片",
+        description: "所有圖片已被選擇。請重置以重新開始。"
       });
       return;
     }
@@ -78,6 +80,9 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     // Update the selection state
     selectImageMutation.mutate(selectedImage.id);
     setRecentlySelected(selectedImage);
+    
+    // Show the reveal modal
+    setShowRevealModal(true);
   };
 
   const handleReset = () => {
@@ -96,6 +101,13 @@ export function ImageGallery({ images }: ImageGalleryProps) {
 
   return (
     <Card className="w-full">
+      {/* Card Reveal Modal */}
+      <CardRevealModal 
+        image={recentlySelected || undefined}
+        open={showRevealModal}
+        onClose={() => setShowRevealModal(false)}
+      />
+      
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-semibold text-gray-800">您的圖片</CardTitle>
         <div className="flex gap-2">

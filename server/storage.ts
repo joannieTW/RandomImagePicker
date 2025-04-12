@@ -156,10 +156,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async resetAllImages(): Promise<void> {
-    await db
-      .update(images)
-      .set({ selected: false })
-      .returning();
+    // 清空所有圖片
+    await db.delete(images);
   }
 }
 
