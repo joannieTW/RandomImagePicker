@@ -97,20 +97,20 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl font-semibold text-gray-800">Your Images</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">您的图片</CardTitle>
         <div className="flex gap-2">
           <Button 
             onClick={selectRandomImage} 
             disabled={noImages || selectImageMutation.isPending}
           >
-            <Shuffle className="mr-2 h-4 w-4" /> Select Random Image
+            <Shuffle className="mr-2 h-4 w-4" /> 随机选择图片
           </Button>
           <Button 
             variant="outline" 
             onClick={handleReset}
             disabled={resetMutation.isPending}
           >
-            <RotateCcw className="mr-2 h-4 w-4" /> Reset
+            <RotateCcw className="mr-2 h-4 w-4" /> 重置
           </Button>
         </div>
       </CardHeader>
@@ -127,7 +127,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         {noImages ? (
           <div className="py-12 text-center">
             <div className="text-4xl text-gray-400 mb-2">🖼️</div>
-            <p className="text-gray-600">No images uploaded yet</p>
+            <p className="text-gray-600">尚未上传图片</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">

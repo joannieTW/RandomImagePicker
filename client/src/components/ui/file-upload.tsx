@@ -40,8 +40,8 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
     
     if (validFiles.length === 0) {
       toast({
-        title: "Invalid files",
-        description: "Please upload only image files",
+        title: "无效文件",
+        description: "请只上传图片文件",
         variant: "destructive"
       });
       return;
@@ -75,8 +75,8 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
     onUploadComplete(uploadedImages);
     
     toast({
-      title: "Upload complete",
-      description: `${uploadedImages.length} images uploaded successfully`,
+      title: "上传完成",
+      description: `已成功上传 ${uploadedImages.length} 张图片`,
     });
   };
 
@@ -92,7 +92,7 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-gray-800">Upload Images</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">上传图片</CardTitle>
       </CardHeader>
       <CardContent>
         <input 

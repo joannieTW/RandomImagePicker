@@ -46,9 +46,9 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Random Image Selector</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 mb-2">随机图片选择器</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Upload multiple images and randomly select one at a time. Each image can only be selected once.
+          上传多张图片并随机选择一张。每张图片只能被选择一次。
         </p>
       </header>
 
@@ -65,7 +65,7 @@ export default function Home() {
       </main>
 
       <footer className="mt-12 text-center text-gray-500 text-sm pb-8">
-        <p>Random Image Selector &copy; {new Date().getFullYear()} - A utility for fair and unbiased selections</p>
+        <p>随机图片选择器 &copy; {new Date().getFullYear()} - 公平无偏的选择工具</p>
       </footer>
     </div>
   );
