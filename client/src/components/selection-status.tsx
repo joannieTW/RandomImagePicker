@@ -8,21 +8,21 @@ interface SelectionStatusProps {
 export function SelectionStatus({ totalCount, selectedCount }: SelectionStatusProps) {
   const remaining = totalCount - selectedCount;
   
-  let remainingText = "All images available";
+  let remainingText = "所有图片可选";
   if (totalCount > 0) {
     if (remaining === 0) {
-      remainingText = "All images selected";
+      remainingText = "所有图片已选择";
     } else if (remaining < totalCount) {
-      remainingText = `${remaining} images remaining`;
+      remainingText = `还剩 ${remaining} 张图片`;
     }
   }
 
   return (
     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
       <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-        <span className="font-medium">Status:</span>
-        <span>{selectedCount}</span> of 
-        <span>{totalCount}</span> images selected
+        <span className="font-medium">状态：</span>
+        <span>{selectedCount}</span> / 
+        <span>{totalCount}</span> 张图片已选择
         <div className="ml-auto">
           <span className="text-primary font-medium">{remainingText}</span>
         </div>

@@ -92,7 +92,7 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-gray-800">上传图片</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">上傳圖片</CardTitle>
       </CardHeader>
       <CardContent>
         <input 

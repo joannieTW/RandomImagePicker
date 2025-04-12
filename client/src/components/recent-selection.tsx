@@ -10,7 +10,7 @@ export function RecentSelection({ image }: RecentSelectionProps) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-md font-medium text-gray-700 mb-3">Recently Selected:</h3>
+      <h3 className="text-md font-medium text-gray-700 mb-3">最近选择：</h3>
       <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center gap-4">
         <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
           <img 

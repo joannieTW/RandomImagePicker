@@ -48,13 +48,13 @@ export function UploadDropzone({
       onClick={onSelectFiles}
     >
       <UploadCloud className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-      <p className="text-gray-600 mb-2">拖放图片到这里，或点击浏览</p>
-      <p className="text-sm text-gray-500">支持格式：JPG, PNG, GIF</p>
+      <p className="text-gray-600 mb-2">拖放圖片到這裡，或點擊瀏覽</p>
+      <p className="text-sm text-gray-500">支援格式：JPG, PNG, GIF</p>
       <Button className="mt-4" onClick={(e) => { 
         e.stopPropagation(); 
         onSelectFiles();
       }}>
-        浏览文件
+        瀏覽檔案
       </Button>
     </div>
   );

@@ -150,7 +150,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
                     <div className="rounded-full bg-white w-10 h-10 flex items-center justify-center mb-2">
                       <Check className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-white text-sm font-medium">Selected</span>
+                    <span className="text-white text-sm font-medium">已选择</span>
                   </div>
                 )}
               </div>
