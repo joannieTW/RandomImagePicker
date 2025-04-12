@@ -204,8 +204,8 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
                       </div>
                       <p className="text-lg font-medium">{image.name}</p>
                       <p className="text-sm mt-1 opacity-80">
-                        {image.selected_count === 1 ? "首次抽到" : "第二次抽到"}
-                        {image.group_id > 0 ? ` (分組 ${image.group_id})` : ""}
+                        {(image.selected_count ?? 0) === 1 ? "首次抽到" : "第二次抽到"}
+                        {(image.group_id ?? 0) > 0 ? ` (分組 ${image.group_id})` : ""}
                       </p>
                     </motion.div>
                   )}

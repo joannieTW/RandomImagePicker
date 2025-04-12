@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { FileUpload } from "@/components/ui/file-upload";
 import { ImageGallery } from "@/components/image-gallery";
+import { GroupSelector } from "@/components/group-selector";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -10,6 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<number>(0);
+  const [totalGroups, setTotalGroups] = useState<number>(1);
   const { toast } = useToast();
 
   // Fetch images

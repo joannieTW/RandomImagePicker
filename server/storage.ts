@@ -10,7 +10,7 @@ export interface IStorage {
   getImage(id: number): Promise<Image | undefined>;
   createImage(image: InsertImage): Promise<Image>;
   createImages(images: InsertImage[]): Promise<Image[]>;
-  updateImage(id: number, selected: boolean): Promise<Image | undefined>;
+  updateImage(id: number, selected: boolean, group_id?: number): Promise<Image | undefined>;
   resetAllImages(): Promise<void>;
 }
 
@@ -56,7 +56,13 @@ export class MemStorage implements IStorage {
 
   async createImage(insertImage: InsertImage): Promise<Image> {
     const id = this.currentImageId++;
-    const image: Image = { ...insertImage, id, selected: false };
+    const image: Image = { 
+      ...insertImage, 
+      id, 
+      selected: false,
+      selected_count: 0,
+      group_id: 0
+    };
     this.imageStore.set(id, image);
     return image;
   }
@@ -72,11 +78,34 @@ export class MemStorage implements IStorage {
     return createdImages;
   }
 
-  async updateImage(id: number, selected: boolean): Promise<Image | undefined> {
+  async updateImage(id: number, selected: boolean, group_id: number = 0): Promise<Image | undefined> {
     const image = this.imageStore.get(id);
     if (!image) return undefined;
     
-    const updatedImage: Image = { ...image, selected };
+    // 如果取消選擇 (重置)，就將 selected 設為 false
+    if (!selected) {
+      const updatedImage: Image = { 
+        ...image, 
+        selected: false,
+        selected_count: 0,
+        group_id: 0
+      };
+      this.imageStore.set(id, updatedImage);
+      return updatedImage;
+    }
+    
+    // 如果已經選取兩次，就不允許再選
+    if (image.selected_count != null && image.selected_count >= 2) {
+      return image;
+    }
+    
+    // 增加選取次數
+    const updatedImage: Image = { 
+      ...image, 
+      selected: true,
+      selected_count: (image.selected_count || 0) + 1,
+      group_id
+    };
     this.imageStore.set(id, updatedImage);
     return updatedImage;
   }
@@ -85,7 +114,12 @@ export class MemStorage implements IStorage {
     const allImages = Array.from(this.imageStore.values());
     
     for (const image of allImages) {
-      const resetImage: Image = { ...image, selected: false };
+      const resetImage: Image = { 
+        ...image, 
+        selected: false,
+        selected_count: 0,
+        group_id: 0
+      };
       this.imageStore.set(image.id, resetImage);
     }
   }
@@ -129,7 +163,12 @@ export class DatabaseStorage implements IStorage {
   async createImage(insertImage: InsertImage): Promise<Image> {
     const [image] = await db
       .insert(images)
-      .values({ ...insertImage, selected: false })
+      .values({ 
+        ...insertImage, 
+        selected: false,
+        selected_count: 0,
+        group_id: 0
+      })
       .returning();
     return image;
   }
@@ -139,7 +178,12 @@ export class DatabaseStorage implements IStorage {
     
     const results = await db
       .insert(images)
-      .values(insertImages.map(img => ({ ...img, selected: false })))
+      .values(insertImages.map(img => ({ 
+        ...img, 
+        selected: false, 
+        selected_count: 0,
+        group_id: 0
+      })))
       .returning();
     
     return results;
