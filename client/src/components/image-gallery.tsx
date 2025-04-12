@@ -72,39 +72,45 @@ export function ImageGallery({
   const selectRandomImage = () => {
     let filteredImages;
     
-    // 根據選擇的組別和每張卡最多抽兩次的規則過濾圖片
-    if (selectedGroup > 0) {
-      // 如果有選擇特定組別，只從該組別中抽取
-      filteredImages = images.filter(img => {
-        // 使用 nullish 合并運算符處理 null 值
-        const groupMatch = (img.group_id ?? 0) === selectedGroup || (img.group_id ?? 0) === 0;
-        const canSelect = (img.selected_count ?? 0) < 2;
-        return groupMatch && canSelect;
-      });
-    } else {
-      // 沒有選擇組別，從所有卡片中抽取（每張最多抽2次）
-      filteredImages = images.filter(img => {
+    // 允許從所有卡片中抽取，確保即使卡片數量少於組別數，也能完成所有組別
+    filteredImages = images.filter(img => {
+      // 如果選擇了特定組別，只考慮尚未被當前組別選擇過的卡片
+      if (selectedGroup > 0) {
+        // 檢查此卡片是否已被此組別抽取過
+        const isSelectedByCurrentGroup = (img.group_id ?? 0) === selectedGroup;
+        // 檢查此卡片還能否被選擇（總次數小於2）
+        const canBeSelected = (img.selected_count ?? 0) < 2;
+        // 如果卡片尚未被當前組別抽取過且總抽取次數未達到上限，則可以選擇
+        return !isSelectedByCurrentGroup && canBeSelected;
+      } else {
+        // 從所有卡片中抽取（每張最多抽2次）
         return (img.selected_count ?? 0) < 2;
-      });
-    }
+      }
+    });
     
+    // 如果沒有符合條件的卡片，檢查是否有任何可用卡片
     if (filteredImages.length === 0) {
-      // 如果當前組別沒有可用卡片，自動切換到下一組並提示
-      if (totalGroups > 1 && selectedGroup > 0) {
+      // 嘗試查找任何未達到抽取上限的卡片
+      const anyAvailableCards = images.filter(img => (img.selected_count ?? 0) < 2);
+      
+      if (anyAvailableCards.length > 0 && selectedGroup > 0) {
+        // 如果還有可用卡片但當前組別沒有可用卡片，自動切換到下一組
         selectNextGroup();
         toast({
           title: "已切換到下一組",
           description: `組別 ${selectedGroup} 中所有卡片已抽完，已自動切換到組別 ${selectedGroup + 1 > totalGroups ? 1 : selectedGroup + 1}`
         });
+        return;
       } else {
+        // 如果沒有任何可用卡片
         toast({
           title: "沒有可用圖片",
           description: selectedGroup > 0 
             ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取兩次。請重置或選擇其他組別。`
             : "所有圖片已被抽取兩次。請重置以重新開始。"
         });
+        return;
       }
-      return;
     }
     
     // 隨機選擇一張圖片

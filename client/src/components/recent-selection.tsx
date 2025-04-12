@@ -20,7 +20,7 @@ export function RecentSelection({ image }: RecentSelectionProps) {
           />
         </div>
         <div>
-          <p className="text-gray-800 font-medium">{image.name}</p>
+          {/* 移除檔案名稱顯示 */}
           <div className="flex items-center gap-2">
             <p className="text-sm text-gray-600">
               抽取時間：{timeAgo}

@@ -205,7 +205,6 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
                         </h3>
                         <Sparkles className="h-5 w-5 ml-2 text-yellow-300" />
                       </div>
-                      <p className="text-lg font-medium">{image.name}</p>
                       <p className="text-sm mt-1 opacity-80">
                         第 {selectedCount > 0 ? selectedCount : 1} 次抽到
                         {(image.group_id ?? 0) > 0 ? ` (組別 ${image.group_id})` : ""}
