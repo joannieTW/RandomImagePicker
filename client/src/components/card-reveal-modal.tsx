@@ -147,7 +147,7 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
   
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md border-0 p-0 bg-transparent">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl border-0 p-0 bg-transparent">
         <DialogTitle className="sr-only">抽到的卡片</DialogTitle>
         {/* 煙火效果 */}
         {fireworks.map(fw => (
@@ -204,8 +204,8 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
                       </div>
                       <p className="text-lg font-medium">{image.name}</p>
                       <p className="text-sm mt-1 opacity-80">
-                        {(image.selected_count ?? 0) === 1 ? "首次抽到" : "第二次抽到"}
-                        {(image.group_id ?? 0) > 0 ? ` (分組 ${image.group_id})` : ""}
+                        第 {image.selected_count ?? 1} 次抽到
+                        {(image.group_id ?? 0) > 0 ? ` (組別 ${image.group_id})` : ""}
                       </p>
                     </motion.div>
                   )}

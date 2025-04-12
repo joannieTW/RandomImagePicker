@@ -89,12 +89,21 @@ export function ImageGallery({
     }
     
     if (filteredImages.length === 0) {
-      toast({
-        title: "沒有可用圖片",
-        description: selectedGroup > 0 
-          ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取兩次。請重置或選擇其他組別。`
-          : "所有圖片已被抽取兩次。請重置以重新開始。"
-      });
+      // 如果當前組別沒有可用卡片，自動切換到下一組並提示
+      if (totalGroups > 1 && selectedGroup > 0) {
+        selectNextGroup();
+        toast({
+          title: "已切換到下一組",
+          description: `組別 ${selectedGroup} 中所有卡片已抽完，已自動切換到組別 ${selectedGroup + 1 > totalGroups ? 1 : selectedGroup + 1}`
+        });
+      } else {
+        toast({
+          title: "沒有可用圖片",
+          description: selectedGroup > 0 
+            ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取兩次。請重置或選擇其他組別。`
+            : "所有圖片已被抽取兩次。請重置以重新開始。"
+        });
+      }
       return;
     }
     
@@ -106,6 +115,27 @@ export function ImageGallery({
     selectImageMutation.mutate({
       id: selectedImage.id,
       groupId: selectedGroup
+    }, {
+      onSuccess: () => {
+        // 在抽取成功後，檢查該組別是否還有卡片可抽
+        const remainingCardsInGroup = images.filter(img => {
+          const groupMatch = selectedGroup === 0 || (img.group_id ?? 0) === selectedGroup || (img.group_id ?? 0) === 0;
+          const canSelect = (img.selected_count ?? 0) < 2 && img.id !== selectedImage.id;
+          return groupMatch && canSelect;
+        });
+        
+        // 如果該組別沒有更多卡片可抽，自動切換到下一組
+        if (remainingCardsInGroup.length === 0 && totalGroups > 1 && selectedGroup > 0) {
+          // 延遲切換到下一組，確保使用者能看到當前抽取結果
+          setTimeout(() => {
+            selectNextGroup();
+            toast({
+              title: "已切換到下一組",
+              description: `組別 ${selectedGroup} 中所有卡片已抽完，已自動切換到組別 ${selectedGroup + 1 > totalGroups ? 1 : selectedGroup + 1}`
+            });
+          }, 1500);
+        }
+      }
     });
     
     setRecentlySelected(selectedImage);
@@ -121,6 +151,17 @@ export function ImageGallery({
   // 處理組別切換
   const handleGroupChange = (groupId: number) => {
     setSelectedGroup(groupId);
+  };
+
+  // 依序從第一組到最後一組抽取
+  const selectNextGroup = () => {
+    // 如果目前選擇的是全部(0)或最後一組，則下一組是第1組
+    if (selectedGroup === 0 || selectedGroup >= totalGroups) {
+      setSelectedGroup(1);
+    } else {
+      // 否則選擇下一組
+      setSelectedGroup(selectedGroup + 1);
+    }
   };
   
   // 生成組別標籤
