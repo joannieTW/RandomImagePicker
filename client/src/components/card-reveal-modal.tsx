@@ -145,9 +145,12 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
     }
   }, [open]);
   
+  // 在這裡直接獲取選中次數，避免使用默認值
+  const selectedCount = image?.selected_count || 0;
+  
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl border-0 p-0 bg-transparent">
+      <DialogContent className="sm:max-w-sm md:max-w-md border-0 p-0 bg-transparent">
         <DialogTitle className="sr-only">抽到的卡片</DialogTitle>
         {/* 煙火效果 */}
         {fireworks.map(fw => (
@@ -204,7 +207,7 @@ export function CardRevealModal({ image, open, onClose }: CardRevealModalProps) 
                       </div>
                       <p className="text-lg font-medium">{image.name}</p>
                       <p className="text-sm mt-1 opacity-80">
-                        第 {image.selected_count ?? 1} 次抽到
+                        第 {recentlySelected ? (recentlySelected.selected_count || 1) : 1} 次抽到
                         {(image.group_id ?? 0) > 0 ? ` (組別 ${image.group_id})` : ""}
                       </p>
                     </motion.div>
