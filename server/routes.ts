@@ -75,6 +75,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to reset images" });
     }
   });
+  
+  // Delete a single image
+  router.delete("/images/:id", async (req, res) => {
+    try {
+      const id = z.coerce.number().parse(req.params.id);
+      await storage.deleteImage(id);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        res.status(400).json({ message: validationError.message });
+      } else {
+        res.status(500).json({ message: "Failed to delete image" });
+      }
+    }
+  });
 
   // Use router middleware
   app.use("/api", router);

@@ -12,6 +12,7 @@ export interface IStorage {
   createImages(images: InsertImage[]): Promise<Image[]>;
   updateImage(id: number, selected: boolean, group_id?: number): Promise<Image | undefined>;
   resetAllImages(): Promise<void>;
+  deleteImage(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -122,6 +123,10 @@ export class MemStorage implements IStorage {
       };
       this.imageStore.set(image.id, resetImage);
     }
+  }
+  
+  async deleteImage(id: number): Promise<void> {
+    this.imageStore.delete(id);
   }
 }
 
@@ -234,6 +239,13 @@ export class DatabaseStorage implements IStorage {
   async resetAllImages(): Promise<void> {
     // 清空所有圖片
     await db.delete(images);
+  }
+  
+  async deleteImage(id: number): Promise<void> {
+    // 刪除單張圖片
+    await db
+      .delete(images)
+      .where(eq(images.id, id));
   }
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Shuffle, RotateCcw } from "lucide-react";
+import { Check, Shuffle, RotateCcw, Trash2 } from "lucide-react";
 import { SelectionStatus } from "./selection-status";
 import { RecentSelection } from "./recent-selection";
 import { CompletionState } from "./completion-state";
@@ -64,6 +64,28 @@ export function ImageGallery({
       toast({
         title: "錯誤",
         description: "無法重置選擇",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  // 刪除單張圖片
+  const deleteImageMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest('DELETE', `/api/images/${id}`, undefined);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/images'] });
+      toast({
+        title: "刪除成功",
+        description: "已刪除該圖片"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "錯誤",
+        description: "無法刪除圖片",
         variant: "destructive"
       });
     }
@@ -273,7 +295,7 @@ export function ImageGallery({
               <div 
                 key={image.id} 
                 className={cn(
-                  "relative rounded-lg overflow-hidden bg-gray-100 aspect-square transition-all hover:shadow-lg",
+                  "relative rounded-lg overflow-hidden bg-gray-100 aspect-square transition-all hover:shadow-lg group",
                   image.selected ? "" : "hover:-translate-y-1"
                 )}
               >
@@ -282,6 +304,20 @@ export function ImageGallery({
                   alt={image.name} 
                   className="w-full h-full object-cover"
                 />
+                
+                {/* 刪除按鈕 */}
+                <button
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm('確定要刪除此圖片嗎？')) {
+                      deleteImageMutation.mutate(image.id);
+                    }
+                  }}
+                  title="刪除圖片"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
                 
                 {/* 顯示卡片抽取狀態 */}
                 {(image.selected_count ?? 0) > 0 && (
