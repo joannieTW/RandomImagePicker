@@ -95,8 +95,8 @@ export class MemStorage implements IStorage {
       return updatedImage;
     }
     
-    // 如果已經選取兩次，就不允許再選
-    if (image.selected_count != null && image.selected_count >= 2) {
+    // 如果已經選取一次，就不允許再選
+    if (image.selected_count != null && image.selected_count >= 1) {
       return image;
     }
     
@@ -216,8 +216,8 @@ export class DatabaseStorage implements IStorage {
       return image || undefined;
     }
     
-    // If selecting and count is already 2, don't allow more selections
-    if (currentImage.selected_count != null && currentImage.selected_count >= 2) {
+    // If selecting and count is already 1, don't allow more selections
+    if (currentImage.selected_count != null && currentImage.selected_count >= 1) {
       return currentImage;
     }
     

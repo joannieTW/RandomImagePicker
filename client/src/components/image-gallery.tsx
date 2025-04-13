@@ -100,20 +100,20 @@ export function ImageGallery({
       if (selectedGroup > 0) {
         // 檢查此卡片是否已被此組別抽取過
         const isSelectedByCurrentGroup = (img.group_id ?? 0) === selectedGroup;
-        // 檢查此卡片還能否被選擇（總次數小於2）
-        const canBeSelected = (img.selected_count ?? 0) < 2;
+        // 檢查此卡片還能否被選擇（總次數小於1）
+        const canBeSelected = (img.selected_count ?? 0) < 1;
         // 如果卡片尚未被當前組別抽取過且總抽取次數未達到上限，則可以選擇
         return !isSelectedByCurrentGroup && canBeSelected;
       } else {
-        // 從所有卡片中抽取（每張最多抽2次）
-        return (img.selected_count ?? 0) < 2;
+        // 從所有卡片中抽取（每張只能抽1次）
+        return (img.selected_count ?? 0) < 1;
       }
     });
     
     // 如果沒有符合條件的卡片，檢查是否有任何可用卡片
     if (filteredImages.length === 0) {
       // 嘗試查找任何未達到抽取上限的卡片
-      const anyAvailableCards = images.filter(img => (img.selected_count ?? 0) < 2);
+      const anyAvailableCards = images.filter(img => (img.selected_count ?? 0) < 1);
       
       if (anyAvailableCards.length > 0 && selectedGroup > 0) {
         // 如果還有可用卡片但當前組別沒有可用卡片，自動切換到下一組
@@ -128,8 +128,8 @@ export function ImageGallery({
         toast({
           title: "沒有可用圖片",
           description: selectedGroup > 0 
-            ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取兩次。請重置或選擇其他組別。`
-            : "所有圖片已被抽取兩次。請重置以重新開始。"
+            ? `組別 ${selectedGroup} 中沒有可用圖片，所有卡片已被抽取一次。請重置或選擇其他組別。`
+            : "所有圖片已被抽取一次。請重置以重新開始。"
         });
         return;
       }
@@ -151,7 +151,7 @@ export function ImageGallery({
         // 在抽取成功後，檢查該組別是否還有卡片可抽
         const remainingCardsInGroup = images.filter(img => {
           const groupMatch = selectedGroup === 0 || (img.group_id ?? 0) === selectedGroup || (img.group_id ?? 0) === 0;
-          const canSelect = (img.selected_count ?? 0) < 2 && img.id !== selectedImage.id;
+          const canSelect = (img.selected_count ?? 0) < 1 && img.id !== selectedImage.id;
           return groupMatch && canSelect;
         });
         
@@ -235,7 +235,7 @@ export function ImageGallery({
   };
   
   // 是否所有圖片都已選擇
-  const allSelected = images.length > 0 && images.every(img => (img.selected_count ?? 0) >= 2);
+  const allSelected = images.length > 0 && images.every(img => (img.selected_count ?? 0) >= 1);
   
   // 是否沒有上傳圖片
   const noImages = images.length === 0;
